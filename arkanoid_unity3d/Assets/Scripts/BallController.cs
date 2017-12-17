@@ -4,8 +4,26 @@ using UnityEngine;
 
 public class BallController : MonoBehaviour
 {
-	[HideInInspector]
-	public int speed = 1000;
+	void Start()
+	{
+		_ballDownTrigger.BallDownEvent += SetPassive;
+	}
+
+	void OnDestroy()
+	{
+		_ballDownTrigger.BallDownEvent -= SetPassive;
+	}
+
+	void GetBallComponent()
+	{
+		_ballRect = _ball.GetComponent<RectTransform>();
+		_ballTransform = _ball.GetComponent<Transform>();
+		_ballRigitbody = _ball.GetComponent<Rigidbody2D>();
+		_ballCollider = _ball.GetComponent<CircleCollider2D>();
+		_ballScale = _ballTransform.localScale;
+	}
+
+	int ballSpeedKoef = 15;
 	public float size
 	{
 		get
@@ -15,9 +33,23 @@ public class BallController : MonoBehaviour
 		set
 		{
 			_size = value;
+			if (_ballRect == null || _ballCollider == null)
+			{
+				GetBallComponent();
+			}
+
 			_ballRect.sizeDelta = new Vector2(value, value);
-			_collider.radius = size;
-			_collider.offset = new Vector2(0, value);
+			_ballCollider.radius = size;
+			_ballCollider.offset = new Vector2(0, value);
+		}
+	}
+
+	void OnCollisionEnter2D(Collision2D other)
+	{
+		if (_isActive && other.gameObject.name == "platform")
+		{
+			float percentPosition = _platformController.GetPosition(_ballTransform.position.x);
+			SetActive(new Vector2(percentPosition * 3, 2f));
 		}
 	}
 
@@ -27,19 +59,59 @@ public class BallController : MonoBehaviour
 		if (!_isActive && (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)))
 		{
 			_isActive = true;
-			_rigitbody.AddForce(speed * new Vector2(1f, 3f));
-		}
-		else if (_isActive)
-		{
-			
+
+			if (_ballRigitbody == null || _ballTransform == null)
+			{
+				GetBallComponent();
+			}
+
+			SetActive(new Vector2(1, 3));
+
+			_ballTransform.parent = _parentActiveposition;
+			_ballTransform.localScale = _ballScale;
 		}
 	}
 
-	[SerializeField] Transform 			_parentFirstState;
-	[SerializeField] CircleCollider2D	_collider;
-	[SerializeField] RectTransform		_ballRect;
-	[SerializeField] Rigidbody2D		_rigitbody;
+	void SetActive(Vector2 force)
+	{
+		_ballRigitbody.Sleep();
+		_ballRigitbody.WakeUp();
+		_ballRigitbody.AddForce(ballSpeedKoef * 1000 * force.normalized);
+	}
+
+	void SetPassive()
+	{
+		if (!_isActive)
+		{
+			return;
+		}
+
+		if (_ballTransform == null)
+		{
+			GetBallComponent();
+		}
+		_isActive = false;
+		_ballTransform.parent = _parentStartPosition;
+		_ballTransform.localScale = _ballScale;
+		_ballTransform.localPosition = Vector3.zero;
+		_ballRigitbody.Sleep();
+	}
+
+	[SerializeField] GameObject			_ball;
+
+	[SerializeField] Transform			_parentStartPosition;
+	[SerializeField] Transform			_parentActiveposition;
+
+	[SerializeField] BallDownTrigger	_ballDownTrigger;
+	[SerializeField] PlatformController	_platformController;
+
 
 	float						_size;
 	bool 						_isActive = false;
+
+	RectTransform				_ballRect;
+	Transform					_ballTransform;
+	Rigidbody2D					_ballRigitbody;
+	CircleCollider2D			_ballCollider;
+	Vector3						_ballScale;
 }

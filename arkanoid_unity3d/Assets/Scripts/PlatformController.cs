@@ -25,11 +25,15 @@ public class PlatformController : MonoBehaviour
 	}
 
 
-
 	void Update()
 	{
 		float x = Mathf.Clamp(Input.mousePosition.x * _koef, _leftPosition.position.x * _koef + width / 2f, _rightPosition.position.x * _koef - width / 2f);
 		_platform.position = new Vector3(x / _koef, _platform.position.y, _platform.position.z);
+	}
+
+	public float GetPosition(float x) //получить положение координаты относительно цента платформы от -1 до +1
+	{
+		return 2 * (x - _platform.position.x) / width;
 	}
 
 	[SerializeField] CanvasScaler	_canvas;
