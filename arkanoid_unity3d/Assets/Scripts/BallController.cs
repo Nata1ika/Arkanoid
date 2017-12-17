@@ -7,11 +7,13 @@ public class BallController : MonoBehaviour
 	void Start()
 	{
 		_ballDownTrigger.BallDownEvent += SetPassive;
+		BlockController.WinEvent += SetPassive;
 	}
 
 	void OnDestroy()
 	{
 		_ballDownTrigger.BallDownEvent -= SetPassive;
+		BlockController.WinEvent -= SetPassive;
 	}
 
 	void GetBallComponent()
@@ -23,7 +25,8 @@ public class BallController : MonoBehaviour
 		_ballScale = _ballTransform.localScale;
 	}
 
-	int ballSpeedKoef = 15;
+	public int ballSpeedKoef { get; set; }
+
 	public float size
 	{
 		get
@@ -67,7 +70,7 @@ public class BallController : MonoBehaviour
 
 			SetActive(new Vector2(1, 3));
 
-			_ballTransform.parent = _parentActiveposition;
+			_ballTransform.SetParent(_parentActiveposition, true);
 			_ballTransform.localScale = _ballScale;
 		}
 	}
@@ -91,7 +94,7 @@ public class BallController : MonoBehaviour
 			GetBallComponent();
 		}
 		_isActive = false;
-		_ballTransform.parent = _parentStartPosition;
+		_ballTransform.SetParent(_parentStartPosition);
 		_ballTransform.localScale = _ballScale;
 		_ballTransform.localPosition = Vector3.zero;
 		_ballRigitbody.Sleep();

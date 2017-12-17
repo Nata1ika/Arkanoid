@@ -53,11 +53,16 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\BallController.cs" />
      <Compile Include="Assets\Scripts\BallDownTrigger.cs" />
+     <Compile Include="Assets\Scripts\BallSpeedSlider.cs" />
+     <Compile Include="Assets\Scripts\BlockController.cs" />
+     <Compile Include="Assets\Scripts\GamePanel.cs" />
      <Compile Include="Assets\Scripts\LifeController.cs" />
      <Compile Include="Assets\Scripts\LifeSlider.cs" />
+     <Compile Include="Assets\Scripts\LosePanel.cs" />
      <Compile Include="Assets\Scripts\Panel.cs" />
      <Compile Include="Assets\Scripts\PlatformController.cs" />
      <Compile Include="Assets\Scripts\PlatformSlider.cs" />
+     <Compile Include="Assets\Scripts\WinPanel.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity2017.2.0p4/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

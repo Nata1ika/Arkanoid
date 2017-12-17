@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Panel : MonoBehaviour
 {
-	void Start()
+	public virtual void Start()
 	{
 		if (_showOnStart)
 		{
@@ -12,7 +12,7 @@ public class Panel : MonoBehaviour
 		}
 	}
 
-	public void Show()
+	public virtual void Show()
 	{
 		_parent.SetActive(true);
 	}
