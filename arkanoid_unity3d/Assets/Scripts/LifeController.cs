@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class LifeController : MonoBehaviour
 {
 	public System.Action LoseEvent;
+	public static System.Action	RemoveLife;
 
 	public int life
 	{
@@ -36,6 +37,10 @@ public class LifeController : MonoBehaviour
 	void BallDown()
 	{
 		life--;
+		if (RemoveLife != null)
+		{
+			RemoveLife();
+		}
 		if (life < 0 && LoseEvent != null)
 		{
 			LoseEvent();

@@ -5,9 +5,13 @@ using UnityEngine.UI;
 
 public class BlockController : MonoBehaviour
 {
+	public static bool removeBonusAfterRemoveLife { get; set; }
+
 	static int maxCount = 0;
 	static int count = 0;
+
 	public static System.Action WinEvent;
+	public static System.Action	DestroyEvent;
 
 	void Start()
 	{
@@ -16,6 +20,7 @@ public class BlockController : MonoBehaviour
 		_lifeController.LoseEvent += EndGame;
 		WinEvent += EndGame;
 		BonusTrigger.BonusEvent += Bonus;
+		LifeController.RemoveLife += RemoveBonusAfterRemoveLife;
 
 		StartGame();
 	}
@@ -26,6 +31,7 @@ public class BlockController : MonoBehaviour
 		_lifeController.LoseEvent -= EndGame;
 		WinEvent -= EndGame;
 		BonusTrigger.BonusEvent -= Bonus;
+		LifeController.RemoveLife -= RemoveBonusAfterRemoveLife;
 	}
 
 	void StartGame()
@@ -66,6 +72,11 @@ public class BlockController : MonoBehaviour
 	{
 		count++;
 		gameObject.SetActive(false);
+
+		if (DestroyEvent != null)
+		{
+			DestroyEvent();
+		}
 		if (count == maxCount)
 		{
 			if (WinEvent != null)
@@ -105,11 +116,9 @@ public class BlockController : MonoBehaviour
 
 	void Update()
 	{
-		if (_fireBallTime < 0 && _fireBallTime > -5) //сделать блоки без триггера
+		if (_fireBallTime < 0 && _fireBallTime > -5) //сделать блоки без триггера.время бонуса истекло
 		{
-			_collider.isTrigger = false;
-			_image.color = new Color(_image.color.r, _image.color.g, _image.color.b, 1f);
-			_fireBallTime = -10;
+			EndFireball();
 		}
 		else if (_fireBallTime >= 0)
 		{
@@ -117,14 +126,16 @@ public class BlockController : MonoBehaviour
 		}
 	}
 
-	void EndGame()
+	void RemoveBonusAfterRemoveLife()
 	{
-		if (_bonusObj != null)
+		if (removeBonusAfterRemoveLife)
 		{
-			GameObject.Destroy(_bonusObj);
-			_bonusObj = null;
+			EndFireball();
 		}
+	}
 
+	void EndFireball()
+	{
 		if (_collider == null)
 		{
 			_collider = gameObject.GetComponent<Collider2D>();
@@ -135,8 +146,18 @@ public class BlockController : MonoBehaviour
 			_image = gameObject.GetComponent<Image>();
 		}
 		_image.color = new Color(_image.color.r, _image.color.g, _image.color.b, 1f);
-
 		_fireBallTime = -10;
+	}
+
+	void EndGame()
+	{
+		if (_bonusObj != null)
+		{
+			GameObject.Destroy(_bonusObj);
+			_bonusObj = null;
+		}
+
+		EndFireball();
 	}
 
 	[SerializeField] LifeController		_lifeController;
