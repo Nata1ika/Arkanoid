@@ -11,5 +11,9 @@ public class BallDownTrigger : MonoBehaviour
 		{
 			BallDownEvent();
 		}
+		if (other.tag == "bonus")
+		{
+			GameObject.Destroy(other.gameObject);
+		}
 	}
 }
